@@ -16,7 +16,6 @@ export class Customerfield {
   readonly address = input<string>();
   private firestore = inject(Firestore);
 
-  // Testing
   completeOrder() {
     const docRef = doc(this.firestore, `users/${this.calledNumber()}/customers/${this.callerId()}`);
     updateDoc(docRef, {
