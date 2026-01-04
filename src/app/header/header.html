@@ -1,0 +1,6 @@
+<div class="header">
+  <p class="header-title">majs.ai</p>
+  @if (user$ | async; as user) {
+  <button i18n class="logout-button" (click)="logout()">Logout</button>
+  }
+</div>

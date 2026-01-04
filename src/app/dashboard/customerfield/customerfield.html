@@ -1,0 +1,21 @@
+<div class="field" [class.field-ongoing]="status() === 'ongoing'" [class.field-completed]="status() === 'completed'">
+  <div class="field-header">
+    <h2 i18n class="field-title">New order</h2>
+    @if (status() === 'ongoing') {
+    <button i18n (click)="completeOrder()" class="complete-order-button">Complete order</button>
+    }
+  </div>
+  <p class="field-summary">{{ callSummary() }}</p>
+  <div class="field-info">
+    <div class="field-info-item">
+      <mat-icon aria-hidden="false" aria-label="phone icon" fontIcon="phone_enabled"></mat-icon>
+      <p class="field-phone">{{ callerId() }}</p>
+    </div>
+    @if (address()) {
+    <div class="field-info-item">
+      <mat-icon aria-hidden="false" size="large" aria-label="home icon" fontIcon="home"></mat-icon>
+      <p>{{ address() }}</p>
+    </div>
+    }
+  </div>
+</div>

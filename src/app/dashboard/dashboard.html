@@ -1,0 +1,17 @@
+<div class="dashboard-container">
+  <div class="dashboard-content">
+    @if (customers$ | async; as customers) { @if (customers.length === 0) {
+    <p i18n>No customers found. Add some customers to see them here.</p>
+    } @else { @for (customer of customers; track customer.caller_id) {
+    <app-customerfield
+      [callerId]="customer.caller_id"
+      [calledNumber]="customer.called_number"
+      [callSummary]="customer.conv_summary"
+      [address]="customer.address"
+      [status]="customer.status"
+    />
+    } } } @else {
+    <p i18n>Loading...</p>
+    }
+  </div>
+</div>

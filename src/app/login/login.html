@@ -1,0 +1,28 @@
+<div class="login-container">
+  <div class="login-form">
+    <h1>Sign in with phone number</h1>
+
+    <input
+      type="tel"
+      id="phone-number"
+      placeholder="12345678"
+      [(ngModel)]="phoneNumber"
+      minlength="8"
+      maxlength="8"
+      pattern="[0-9]{8}"
+      inputmode="numeric"
+      required
+    />
+    <div id="recaptcha-container"></div>
+    <button (click)="getOTP()">Get OTP</button>
+    @if (errorMessage) {
+    <div class="error-message">{{ errorMessage }}</div>
+    } @if (confirmationResult) {
+    <div>
+      <label for="verification-code">Verification code</label><br />
+      <input type="text" id="verification-code" placeholder="123456" [(ngModel)]="verificationCode" maxlength="6" />
+      <button (click)="verifyOTP()">Verify OTP</button>
+    </div>
+    }
+  </div>
+</div>
