@@ -49,11 +49,6 @@ export const elevenlabsPostCallWebhook = onRequest(
       const twilioClient = twilio(accountSid, authToken);
 
       try {
-        const newMessage =
-          "Hej! Du kan indtaste din adresse her hvis du vil have at vi " +
-          "levere ordren til dig. Ellers kan du ignorere denne besked. " +
-          "Mange tak på forhånd!";
-
         const convSummary =
           request.body.data?.analysis?.data_collection_results?.summary_da
             ?.value;
@@ -84,42 +79,51 @@ export const elevenlabsPostCallWebhook = onRequest(
           .replace(/\\u00f8/g, "ø")
           .replace(/\\u00e5/g, "å");
 
-        if (confirmOrder === "No") {
-          console.log("Customer did not confirm order");
+        // confirmOrder can also be null or undefined. Not just No.
+        if (confirmOrder === "Yes") {
+          const newOrderMsg =
+            "Hej! Vi har modtaget din ordre. " +
+            "Hvis du vil have at vi leverer ordren til dig, " +
+            "kan du indtaste din adresse her. " +
+            "Ellers kan du ignorere denne besked, " +
+            "og afhente din ordre om 10-20 minutter. " +
+            "Mange tak på forhånd!";
+
+          const doc = await db
+            .collection("users")
+            .doc(calledNumber)
+            .collection("customers")
+            .doc(callerId)
+            .get();
+
+          const address = doc.data()?.address;
+
+          await db
+            .collection("users")
+            .doc(calledNumber)
+            .collection("customers")
+            .doc(callerId)
+            .set({
+              conv_summary: convSummaryParsed,
+              call_sid: callSid,
+              called_number: calledNumber,
+              caller_id: callerId,
+              timestamp: Math.floor(new Date().getTime() / 1000),
+              status: "ongoing",
+            });
+
+          if (!address) {
+            await twilioClient.messages.create({
+              from: calledNumber,
+              to: callerId,
+              body: newOrderMsg,
+            });
+          }
+
           response.status(200).send("OK");
           return;
         }
-
-        const doc = await db
-          .collection("users")
-          .doc(calledNumber)
-          .collection("customers")
-          .doc(callerId)
-          .get();
-
-        const address = doc.data()?.address;
-
-        await db
-          .collection("users")
-          .doc(calledNumber)
-          .collection("customers")
-          .doc(callerId)
-          .set({
-            conv_summary: convSummaryParsed,
-            call_sid: callSid,
-            called_number: calledNumber,
-            caller_id: callerId,
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            status: "ongoing",
-          });
-
-        if (!address) {
-          await twilioClient.messages.create({
-            from: calledNumber,
-            to: callerId,
-            body: newMessage,
-          });
-        }
+        console.log("Customer did not confirm order");
         response.status(200).send("OK");
       } catch (error) {
         console.error("Error saving conversation", error);

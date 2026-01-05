@@ -27,7 +27,6 @@ setGlobalOptions({maxInstances: 10});
 
 initializeApp();
 
-export {twilioCallWebhook} from "./twilio-call";
 export {twilioMessageWebhook} from "./twilio-message";
 export {elevenlabsPostCallWebhook} from "./elevenlabs-post-call";
 export {elevenlabsInitCallWebhook} from "./elevenlabs-init-call";
